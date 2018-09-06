@@ -1,9 +1,35 @@
-#  Local .terraform directories
-**/.terraform/*
+# local
+.env
+secrets.tfvars
+_*.auto.tfvars
+.DS_Store
 
-# .tfstate files
+/packer/override.yaml
+
+# vim-workspace
+.session.vim*
+
+### https://raw.github.com/github/gitignore/abad92dac5a4306f72242dae3bca6e277bce3615/Terraform.gitignore
+
+# Compiled files
 *.tfstate
-*.tfstate.*
+*.tfstate.*.backup
+*.tfstate.backup
 
-# .tfvars files
-*.tfvars
+# Module directory
+.terraform/
+
+
+### https://raw.github.com/github/gitignore/abad92dac5a4306f72242dae3bca6e277bce3615/Global/Vim.gitignore
+
+# swap
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
+*.zip
