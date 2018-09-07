@@ -22,3 +22,18 @@ variable "url" {
 #(Required) LOGDNA_KEY: LOGDNA_KEY YOUR_INGESTION_KEY_HERE
 #(Optional) LOGDNA_HOSTNAME: Alternative Host Name
 #(Optional) LOGDNA_TAGS: Comma-separated Tags
+
+variable "logdna_hostname" {
+  description = "LOGDNA_HOSTNAME Alternative Host Name"
+  default = ""
+}
+
+variable "logdna_key" {
+  description = "LogDNA Ingestion Key"
+}
+
+variable "logdna_tags" {
+  type        = "list"
+  description = "List of tags to add to log DNA, current region is always added"
+  default     = []
+}

@@ -23,13 +23,17 @@ data "aws_iam_policy_document" "lambda_execution_role" {
   }
 }
 
+data "aws_region" "current" {}
+
 locals {
-  output_file    = "${path.module}/files/lambda/package.zip"
+  output_file        = "${path.module}/files/lambda/package.zip"
   service_identifier = "${var.service_identifier}"
+  logdna_tags        = "${join(",", concat(list(data.aws_region.current.name), var.logdna_tags))}"
+  environment        = "${map("LOGDNA_KEY", "${var.logdna_key}", "LOGDNA_TAGS", "${local.logdna_tags}", "LOGDNA_HOSTNAME", "${var.logdna_hostname}")}"
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name               = "lambda.${local.service_identifier}"
+  name               = "lambda.${local.service_identifier}.${data.aws_region.current.name}"
   assume_role_policy = "${data.aws_iam_policy_document.lambda_execution_role.json}"
 }
 
@@ -44,8 +48,7 @@ resource "aws_iam_role_policy_attachment" "xray_wo" {
 }
 
 resource "aws_lambda_function" "logdna_cloudwatch" {
-  #s3_bucket                      = "${data.aws_s3_bucket.devops.id}"
-  #s3_key                         = "${local.static_web_s3_key}"
+  description                    = "AWS Lambda for logging into LogDNA"
   filename                       = "${local.output_file}"
   source_code_hash               = "${base64sha256(file("${local.output_file}"))}"
   function_name                  = "${local.service_identifier}"
@@ -57,6 +60,9 @@ resource "aws_lambda_function" "logdna_cloudwatch" {
 
   tags {
     Application = "${local.service_identifier}"
-    Identifier  = "${var.service_identifier}"
+  }
+
+  environment {
+    variables = "${local.environment}"
   }
 }
