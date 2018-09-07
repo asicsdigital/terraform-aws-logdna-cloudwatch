@@ -25,7 +25,7 @@ variable "url" {
 
 variable "logdna_hostname" {
   description = "LOGDNA_HOSTNAME Alternative Host Name"
-  default = ""
+  default     = ""
 }
 
 variable "logdna_key" {
