@@ -2,41 +2,52 @@
 Terraform Module to deploy the LogDNA Cloudwatch Lambda
 ===========
 
-A terraform module for deploying Docker Images for a Consul agent, a Registrator agent, and a sidecar health check container that Consul can use to run health checks.
-
-This module is designed to be used in conjunction with the [ECS Module](https://github.com/terraform-community-modules/tf_aws_ecs/)
+A terraform module for deploying the LogDNA log integration lambda as described here: https://github.com/logdna/aws-cloudwatch
 
 This module
 
-- deploys consul containers on top of an existing ECS cluster
-- Deploys registrator
-- Deploys a health check container that Consul can use to mount and execute health checks using the Docker exec API. https://www.consul.io/docs/agent/checks.html
+- deploys the labmda from the LogDNA Repo
+- Creates the required IAM resources
 
 ----------------------
 #### Required
-- `ecs_cluster` - EC2 Container Service cluster in which the service will be deployed (must already exist, the module will not create it).
+- `service_identifier` - service_identifier - Unique identifier for the app, used in naming resources. (ex: LogDNA-dev )
+- `logdna_key` - LogDNA Ingestion Key
 
 
 #### Optional
 
 - `consul_image` - Image to use when deploying consul, defaults to the hashicorp consul image
-- `consul_memory_reservation` - The soft limit (in MiB) of memory to reserve for the container, (defaults 32)
-- `definitions` - List of Consul Service and Health Check Definitions
-- `sidecar_image` - Image to use when deploying health check agent, defaults to fitnesskeeper/consul-sidecar:latest image
-- `sidecar_memory_reservation` - The soft limit (in MiB) of memory to reserve for the container, defaults 32
-- `iam_path` - IAM path, this is useful when creating resources with the same name across multiple regions. (Defaults to /)
-- `registrator_image` - Image to use when deploying registrator agent, defaults to the gliderlabs registrator:latest image
-- `registrator_memory_reservation` The soft limit (in MiB) of memory to reserve for the container, defaults 32
+- `logdna_hostname` - LOGDNA_HOSTNAME Alternative Host Name - NOT YET Implemented
+- `logdna_tags` - List of tags to add to log DNA, current region is always added, region is always added to the array
+- `reserved_concurrent_executions` - Number of reserved concurrent executions (default 10)
+- `url` - URL to script content. (Defaults to GitHub Master : https://raw.githubusercontent.com/logdna/aws-cloudwatch/master/logdna_cloudwatch.py)
+
 
 Usage
 -----
 
 ```hcl
 
-module "consul-infra-svc-pub" {
-  source      = "../modules/terraform-aws-ecs-consul-agents"
-  ecs_cluster = "${module.infra-svc-pub.cluster_name}"
-  definitions = ["ecs-cluster"]
+module "logdna` -
+  source             = "github.com/asicsdigital/terraform-aws-logdna-cloudwatch.git"
+  service_identifier = "LogDNA-dev"
+  logdna_key         = "secret_key"
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "logdna_lambdafunction_logfilter` -
+  name            = "test_lambdafunction_logfilter"
+  log_group_name  = "some-log-group-name"
+  filter_pattern  = "" # This is required, but can be empty
+  destination_arn = "${module.logdna.lambda_arn}"
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch` -
+  statement_id   = "AllowExecutionFromCloudWatch-${module.logdna.function_name}-${data.aws_region.current.name}"
+  action         = "lambda:InvokeFunction"
+  function_name  = "${module.logdna.function_name}"
+  principal      = "logs.amazonaws.com"
+  source_arn     = "arn:aws:logs:us-east-1:123456789012:log-group:some-log-group-name:*"
 }
 
 ```
