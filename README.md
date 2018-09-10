@@ -16,8 +16,6 @@ This module
 
 
 #### Optional
-
-- `consul_image` - Image to use when deploying consul, defaults to the hashicorp consul image
 - `logdna_hostname` - LOGDNA_HOSTNAME Alternative Host Name - NOT YET Implemented
 - `logdna_tags` - List of tags to add to log DNA, current region is always added, region is always added to the array
 - `reserved_concurrent_executions` - Number of reserved concurrent executions (default 10)
