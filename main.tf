@@ -49,8 +49,8 @@ resource "aws_iam_role_policy_attachment" "xray_wo" {
 
 resource "aws_lambda_function" "logdna_cloudwatch" {
   description                    = "AWS Lambda for logging into LogDNA"
-  filename                       = "${local.output_file}"
-  source_code_hash               = "${base64sha256(file("${local.output_file}"))}"
+  filename                       = "${data.archive_file.logdna_cloudwatch.filename}"
+  source_code_hash               = "${base64sha256(file("${data.archive_file.logdna_cloudwatch.filename}"))}"
   function_name                  = "${local.service_identifier}"
   role                           = "${aws_iam_role.lambda_execution_role.arn}"
   handler                        = "logdna_cloudwatch.lambda_handler"
