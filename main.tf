@@ -29,11 +29,11 @@ locals {
   output_file        = "${path.module}/files/lambda/package.zip"
   service_identifier = "${var.service_identifier}"
   logdna_tags        = "${join(",", concat(list(data.aws_region.current.name), var.logdna_tags))}"
-  environment        = "${map("LOGDNA_KEY", "${var.logdna_key}", "LOGDNA_TAGS", "${local.logdna_tags}", "LOGDNA_HOSTNAME", "${var.logdna_hostname}")}"
+  environment        = "${map("LOGDNA_KEY", "${var.logdna_key}", "LOGDNA_TAGS", "${local.logdna_tags}")}"
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name               = "lambda.${local.service_identifier}.${data.aws_region.current.name}"
+  name_prefix        = "lambda.${local.service_identifier}."
   assume_role_policy = "${data.aws_iam_policy_document.lambda_execution_role.json}"
 }
 

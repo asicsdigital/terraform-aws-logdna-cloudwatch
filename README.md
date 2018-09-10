@@ -44,6 +44,10 @@ module "consul-infra-svc-pub" {
 Outputs
 =======
 
+- `script_body`     - Raw content of the script.
+- `lambda_arn`      - arn of the aws_lambda_function resource
+- `lambda_role_arn` - arn of the aws_iam_role resource
+- `function_name`   - function name of the aws_lambda_function resource
 
 Authors
 =======
