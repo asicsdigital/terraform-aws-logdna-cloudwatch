@@ -25,5 +25,5 @@ variable "service_identifier" {
 
 variable "url" {
   description = "URL to script content. Defaults to GitHub Master"
-  default     = "https://raw.githubusercontent.com/logdna/aws-cloudwatch/master/logdna_cloudwatch.py"
+  default     = "https://raw.githubusercontent.com/logdna/aws-cloudwatch/0.1.0/logdna_cloudwatch.py"
 }
