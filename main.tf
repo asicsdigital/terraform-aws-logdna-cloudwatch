@@ -58,7 +58,7 @@ resource "aws_lambda_function" "logdna_cloudwatch" {
   publish                        = true
   reserved_concurrent_executions = "${var.reserved_concurrent_executions}"
 
-  tags {
+  tags = {
     Application = "${local.service_identifier}"
   }
 
