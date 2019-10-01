@@ -3,6 +3,8 @@
 secrets.tfvars
 _*.auto.tfvars
 .DS_Store
+.envrc
+.idea/*
 
 /packer/override.yaml
 
