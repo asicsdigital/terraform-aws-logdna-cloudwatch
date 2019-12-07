@@ -9,7 +9,7 @@ locals {
 }
 
 data "null_data_source" "lambda_file" {
-  inputs {
+  inputs = {
     filename = "${substr("${path.module}/files/lambda/package.zip", length(path.cwd) + 1, -1)}"
   }
 }
