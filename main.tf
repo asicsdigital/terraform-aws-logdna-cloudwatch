@@ -1,3 +1,19 @@
+locals {
+  output_file        = "${data.null_data_source.lambda_file.outputs.filename}"
+  service_identifier = var.service_identifier
+  logdna_tags        = join(",", concat([data.aws_region.current.name], var.logdna_tags))
+  environment = {
+    "LOGDNA_KEY"  = var.logdna_key
+    "LOGDNA_TAGS" = local.logdna_tags
+  }
+}
+
+data "null_data_source" "lambda_file" {
+  inputs {
+    filename = "${substr("${path.module}/files/lambda/package.zip", length(path.cwd) + 1, -1)}"
+  }
+}
+
 data "http" "logdna_cloudwatch" {
   url = var.url
 }
@@ -24,16 +40,6 @@ data "aws_iam_policy_document" "lambda_execution_role" {
 }
 
 data "aws_region" "current" {
-}
-
-locals {
-  output_file        = "${path.module}/files/lambda/package.zip"
-  service_identifier = var.service_identifier
-  logdna_tags        = join(",", concat([data.aws_region.current.name], var.logdna_tags))
-  environment = {
-    "LOGDNA_KEY"  = var.logdna_key
-    "LOGDNA_TAGS" = local.logdna_tags
-  }
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
