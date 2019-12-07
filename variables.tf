@@ -8,13 +8,13 @@ variable "logdna_key" {
 }
 
 variable "logdna_tags" {
-  type        = "list"
+  type        = list(string)
   description = "List of tags to add to log DNA, current region is always added"
   default     = []
 }
 
 variable "reserved_concurrent_executions" {
-  type        = "string"
+  type        = string
   description = "Number of reserved concurrent executions (default 10)"
   default     = "10"
 }
@@ -27,3 +27,4 @@ variable "url" {
   description = "URL to script content. Defaults to GitHub Master"
   default     = "https://raw.githubusercontent.com/logdna/aws-cloudwatch/0.1.0/logdna_cloudwatch.py"
 }
+
