@@ -27,3 +27,8 @@ variable "url" {
   description = "URL to script content. Defaults to GitHub Master"
   default     = "https://raw.githubusercontent.com/logdna/aws-cloudwatch/0.1.0/logdna_cloudwatch.py"
 }
+
+variable "lambda_timeout" {
+  description = "Timeout in seconds for the lambda"
+  default     = 3
+}

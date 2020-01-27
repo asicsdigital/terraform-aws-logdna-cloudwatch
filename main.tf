@@ -63,6 +63,7 @@ resource "aws_lambda_function" "logdna_cloudwatch" {
   runtime                        = "python2.7"
   publish                        = true
   reserved_concurrent_executions = "${var.reserved_concurrent_executions}"
+  timeout                        = "${var.lambda_timeout}"
 
   tags {
     Application = "${local.service_identifier}"
