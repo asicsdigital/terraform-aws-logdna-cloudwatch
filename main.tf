@@ -1,5 +1,5 @@
 locals {
-  output_file        = "${data.null_data_source.lambda_file.outputs.filename}"
+  output_file        = data.null_data_source.lambda_file.outputs["filename"]
   service_identifier = var.service_identifier
   logdna_tags        = join(",", concat([data.aws_region.current.name], var.logdna_tags))
   environment = {
@@ -10,7 +10,7 @@ locals {
 
 data "null_data_source" "lambda_file" {
   inputs = {
-    filename = "${substr("${path.module}/files/lambda/package.zip", length(path.cwd) + 1, -1)}"
+    filename = "${path.module}/files/lambda/package.zip"
   }
 }
 
@@ -77,4 +77,3 @@ resource "aws_lambda_function" "logdna_cloudwatch" {
     variables = local.environment
   }
 }
-
