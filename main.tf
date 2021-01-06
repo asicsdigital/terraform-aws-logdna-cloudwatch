@@ -10,21 +10,7 @@ locals {
 
 data "null_data_source" "lambda_file" {
   inputs = {
-    filename = "${path.module}/files/lambda/package.zip"
-  }
-}
-
-data "http" "logdna_cloudwatch" {
-  url = var.url
-}
-
-data "archive_file" "logdna_cloudwatch" {
-  type        = "zip"
-  output_path = local.output_file
-
-  source {
-    filename = "logdna_cloudwatch.py"
-    content  = data.http.logdna_cloudwatch.body
+    filename = "${substr("${path.module}/files/logdna_cloudwatchlogs.zip", length(path.cwd) + 1, -1)}"
   }
 }
 
@@ -59,12 +45,12 @@ resource "aws_iam_role_policy_attachment" "xray_wo" {
 
 resource "aws_lambda_function" "logdna_cloudwatch" {
   description                    = "AWS Lambda for logging into LogDNA"
-  filename                       = local.output_file
-  source_code_hash               = data.archive_file.logdna_cloudwatch.output_base64sha256
+  filename                       = lambda_file
+  source_code_hash               = filebase64sha256(lambda_file)
   function_name                  = local.service_identifier
   role                           = aws_iam_role.lambda_execution_role.arn
-  handler                        = "logdna_cloudwatch.lambda_handler"
-  runtime                        = "python2.7"
+  handler                        = "index.handler"
+  runtime                        = "nodejs10.x"
   publish                        = true
   reserved_concurrent_executions = var.reserved_concurrent_executions
   timeout                        = var.lambda_timeout
