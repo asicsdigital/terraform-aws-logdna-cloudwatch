@@ -1,16 +1,10 @@
 locals {
-  output_file        = data.null_data_source.lambda_file.outputs["filename"]
+  lambda_filename    = "${path.module}/files/logdna_cloudwatchlogs.zip" # in TF 0.12 path.module is relative https://github.com/hashicorp/terraform/issues/22708#issuecomment-528969322
   service_identifier = var.service_identifier
   logdna_tags        = join(",", concat([data.aws_region.current.name], var.logdna_tags))
   environment = {
     "LOGDNA_KEY"  = var.logdna_key
     "LOGDNA_TAGS" = local.logdna_tags
-  }
-}
-
-data "null_data_source" "lambda_file" {
-  inputs = {
-    filename = "${substr("${path.module}/files/logdna_cloudwatchlogs.zip", length(path.cwd) + 1, -1)}"
   }
 }
 
@@ -45,8 +39,8 @@ resource "aws_iam_role_policy_attachment" "xray_wo" {
 
 resource "aws_lambda_function" "logdna_cloudwatch" {
   description                    = "AWS Lambda for logging into LogDNA"
-  filename                       = data.null_data_source.lambda_file.outputs.filename
-  source_code_hash               = filebase64sha256(data.null_data_source.lambda_file.outputs.filename)
+  filename                       = local.lambda_filename
+  source_code_hash               = filebase64sha256(local.lambda_filename)
   function_name                  = local.service_identifier
   role                           = aws_iam_role.lambda_execution_role.arn
   handler                        = "index.handler"
