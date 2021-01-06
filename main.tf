@@ -1,30 +1,10 @@
 locals {
-  output_file        = data.null_data_source.lambda_file.outputs["filename"]
+  lambda_filename    = "${path.module}/files/logdna_cloudwatchlogs.zip" # in TF 0.12 path.module is relative https://github.com/hashicorp/terraform/issues/22708#issuecomment-528969322
   service_identifier = var.service_identifier
   logdna_tags        = join(",", concat([data.aws_region.current.name], var.logdna_tags))
   environment = {
     "LOGDNA_KEY"  = var.logdna_key
     "LOGDNA_TAGS" = local.logdna_tags
-  }
-}
-
-data "null_data_source" "lambda_file" {
-  inputs = {
-    filename = "${path.module}/files/lambda/package.zip"
-  }
-}
-
-data "http" "logdna_cloudwatch" {
-  url = var.url
-}
-
-data "archive_file" "logdna_cloudwatch" {
-  type        = "zip"
-  output_path = local.output_file
-
-  source {
-    filename = "logdna_cloudwatch.py"
-    content  = data.http.logdna_cloudwatch.body
   }
 }
 
@@ -59,12 +39,12 @@ resource "aws_iam_role_policy_attachment" "xray_wo" {
 
 resource "aws_lambda_function" "logdna_cloudwatch" {
   description                    = "AWS Lambda for logging into LogDNA"
-  filename                       = local.output_file
-  source_code_hash               = data.archive_file.logdna_cloudwatch.output_base64sha256
+  filename                       = local.lambda_filename
+  source_code_hash               = filebase64sha256(local.lambda_filename)
   function_name                  = local.service_identifier
   role                           = aws_iam_role.lambda_execution_role.arn
-  handler                        = "logdna_cloudwatch.lambda_handler"
-  runtime                        = "python2.7"
+  handler                        = "index.handler"
+  runtime                        = "nodejs10.x"
   publish                        = true
   reserved_concurrent_executions = var.reserved_concurrent_executions
   timeout                        = var.lambda_timeout
