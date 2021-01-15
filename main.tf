@@ -1,5 +1,5 @@
 locals {
-  lambda_filename    = "${path.module}/files/logdna_cloudwatchlogs.zip" # in TF 0.12 path.module is relative https://github.com/hashicorp/terraform/issues/22708#issuecomment-528969322
+  lambda_filename    = "${path.module}/files/logdna-cloudwatch-v2.2.1.zip" # in TF 0.12 path.module is relative https://github.com/hashicorp/terraform/issues/22708#issuecomment-528969322
   service_identifier = var.service_identifier
   logdna_tags        = join(",", concat([data.aws_region.current.name], var.logdna_tags))
   environment = {
