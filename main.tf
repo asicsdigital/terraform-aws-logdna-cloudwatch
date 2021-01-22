@@ -69,6 +69,12 @@ resource "aws_lambda_function" "logdna_cloudwatch" {
   reserved_concurrent_executions = var.reserved_concurrent_executions
   timeout                        = var.lambda_timeout
 
+  layers = data.aws_region.current.name == "us-east-1" ? ["arn:aws:lambda:us-east-1:668099181075:layer:AWSLambda-Python-AWS-SDK:4"] :
+           data.aws_region.current.name == "us-west-1" ? ["arn:aws:lambda:us-west-1:325793726646:layer:AWSLambda-Python-AWS-SDK:4"] :
+           data.aws_region.current.name == "us-east-2" ? ["arn:aws:lambda:us-east-2:259788987135:layer:AWSLambda-Python-AWS-SDK:4"] :
+           data.aws_region.current.name == "us-west-2" ? ["arn:aws:lambda:us-west-2:420165488524:layer:AWSLambda-Python-AWS-SDK:5"] :
+           []
+
   tags = {
     Application = local.service_identifier
   }
